@@ -5,7 +5,7 @@ function Commands.Hello(Context)
 end
 
 function Commands.Say(Context)
-    Context.Message:reply(table.concat(Context.Args))
+    Context.Message:reply(table.concat(Context.Args, " "))
 end
 
 return Commands
