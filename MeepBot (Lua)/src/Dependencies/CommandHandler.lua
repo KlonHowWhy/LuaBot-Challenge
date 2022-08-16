@@ -9,15 +9,12 @@ function CommandHandler.parse(Message, PrefixYes)
 
     local Arguments = {}
 
-    for Argument in Content:gmatch("&S+") do
+    for Argument in Content:gmatch("%S+") do
         table.insert(Arguments, Argument)
     end
 
     local Prefix = Content:sub(1, #PrefixYes):lower() --Prefix part; i.e [m/]hello
     local Command = CommandHandler.Commands[Arguments[1]:sub(3):lower()] --Command part; i.e m/[hello]
-
-    print(CommandHandler.Commands, Arguments)
-    print(Arguments[1])
 
     local CommandYes = Prefix == PrefixYes and Command ~= nil
 
@@ -27,7 +24,7 @@ function CommandHandler.parse(Message, PrefixYes)
 
     table.remove(Arguments, 1)
 
-    Command:Run(Message, Arguments)
+    Command:run(Message, Arguments)
 end
 
 return CommandHandler
