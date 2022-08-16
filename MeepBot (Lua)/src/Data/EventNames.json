@@ -1,0 +1,4 @@
+{
+    "OnMessageSent": "messageCreate",
+    "OnReady": "ready"
+}
