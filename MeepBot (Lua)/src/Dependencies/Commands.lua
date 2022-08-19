@@ -115,8 +115,8 @@ function Commands.Hello(Context) --m/hello with its iterations; done
         end
     else
         Context.Message:reply(string.format(
-            "I'm sorry, I don't know that language yet. But hello there, Mr. %s...\n\nOr perhaps... Mr/s. **",
-            Context.Message.author.mentionString) .. Context.Message.author.name .. "**?")
+            "I'm sorry, I don't know that language yet. But hello there, Mr. %s...\n\nOr perhaps... Mr/s. **%s**?",
+            Context.Message.author.mentionString, Context.Message.author.name))
     end
 end
 
