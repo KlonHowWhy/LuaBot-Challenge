@@ -3,14 +3,11 @@ local genRandom, HeheVariable
 
 function NewRandomSeed() -- #TrueRandomizer
     local param1 = math.random(os.time())
-    math.randomseed(param1)
     local param2 = math.random(os.time())
-    math.randomseed(param2)
-    print("Log: " .. math.random() .. " " .. math.random() .. " " .. math.random())
 
     math.randomseed(param1, param2)
 
-    genRandom = math.random(1, 15)
+    genRandom = math.random(1, 18)
     HeheVariable = math.random(1, 500)
 end
 
@@ -34,7 +31,7 @@ function Commands.Hello(Context) --m/hello with its iterations; done
                 Context.Message.author.name)
         else
             Response = string.format(
-                "***...?*__\n> *Have we met before...? I don't think so-...* Well I'm **MeepBot** who will be your attendant for today.\n> \n" ..
+                "** *...?*__\n> *Have we met before...? I don't think so-...* Well I'm **MeepBot** who will be your attendant for today.\n> \n" ..
                 "> *Nice to meet you, **%s**-san!*",
                 Context.Message.author.name)
         end
@@ -52,7 +49,7 @@ function Commands.Hello(Context) --m/hello with its iterations; done
             NewRandomSeed()
         end
 
-    elseif string.gsub(param, "%s+", "") == "en" then
+    elseif string.gsub(param, "%s+", ""):lower() == "en" then
         if genRandom % 3 == 1 then
             Response = string.format(
                 ".__**\n> Welcome back to our proudest **MeepBot** service, private for you the entire day.\n> \n" ..
@@ -83,7 +80,7 @@ function Commands.Hello(Context) --m/hello with its iterations; done
             NewRandomSeed()
         end
 
-    elseif string.gsub(param, "%s+", "") == "jp" then
+    elseif string.gsub(param, "%s+", ""):lower() == "jp" then
         if genRandom % 3 == 1 then
             Response = string.format(
                 "。__**\n> ようこそいらっしゃいませ、ご主人様。当意即妙「**MeepBot**」は今日一日あなたのみ出勤です！\n> \n" ..
@@ -185,7 +182,7 @@ function Commands.Roll(Context) --m/roll; done
     local Misc = Context.Message.content:sub(7)
     local _, _, Dice = string.find(Misc, "d(%d+)")
     local _, _, Gamble, Pin = string.find(Misc, "d(%d+)%s+(%d+)")
-    local Sides, Roll, BetAnnounce
+    local Sides, Roll, Bet, BetAnnounce
     local Judgement = ""
 
     if Dice == nil then
@@ -202,7 +199,10 @@ function Commands.Roll(Context) --m/roll; done
     else
         Sides = tonumber(Dice)
         Roll = math.random(1, Sides)
+        Bet = tonumber(Pin)
     end
+
+    print(Sides, Roll, Bet)
 
     function BetResult()
         if Bet == Roll then
@@ -219,6 +219,10 @@ function Commands.Roll(Context) --m/roll; done
             if Bet == Sides then
                 BetAnnounce = string.format(
                     "> **:game_die: |** I'm sorry, **%s**-sama. Luck isn't on your side this time, even though you rolled a jackpot...\n",
+                    Context.Message.author.name)
+            elseif Bet > Sides then
+                BetAnnounce = string.format(
+                    "> **:expressionless: |** Do you really need to overkill your bet, **%s**-sama?\n",
                     Context.Message.author.name)
             else
                 BetAnnounce = string.format(
@@ -254,21 +258,37 @@ function Commands.Roll(Context) --m/roll; done
         Context.Message:reply(string.format(
             "> **:trophy: |** You got a **jackpot** and rolled an astounding chance-defying roll of **69420**! :tada:\n" ..
             "> **<:void:1009958825434030201> |** *||Although you technically only got **%d** but that's the point of the jackpot www||*",
-            Roll))
+            tostring(Roll)))
         NewRandomSeed()
-    else    
-        Judge()
-        BetResult()
+    elseif Sides == 0 or Sides >= 9223372036854775806 then
+        local Disappointment = string.format( "> **:expressionless: |** ...\n",
+            Context.Message.author.name)
+
+        if genRandom % 2 == 0 then
+            Context.Message:reply(string.format(Disappointment .. 
+                "> **<:void:1009958825434030201> |** Do you really think I'll allow that *atrocious* number, ***%s**-sama?*\n",
+                Context.Message.author.name))
+        else
+            Context.Message:reply(string.format(Disappointment ..
+                "> **<:void:1009958825434030201> |** I know what you're trying to do, and I won't allow it ***%s**-sama.*\n",
+                Context.Message.author.name))
+        end
+    else
+        if Bet == nil then
+            Judge()
+        else
+            BetResult()
+        end
 
         if Pin ~= nil then
             Context.Message:reply(string.format(
                 BetAnnounce .. "> **<:void:1009958825434030201> |** You rolled a **%d**!\n",
-                Roll))
+                tostring(Roll)))
             NewRandomSeed()
         else
             Context.Message:reply(string.format(
                 "> **:game_die: |** You rolled a **%d**!\n" .. Judgement,
-                Roll))
+                tostring(Roll)))
             NewRandomSeed()
         end
     end
